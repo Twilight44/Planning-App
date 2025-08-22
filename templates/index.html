@@ -1,0 +1,146 @@
+
+<html lang = 'en'>
+    <head>
+        <meta charset = "UTF-8">
+        <Title>
+            Planning App that hopefully works        
+        </Title>
+        <style>
+            body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            margin: 0;
+            padding: 20px;
+        }
+ 
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+                
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+ 
+        h2 {
+            color: #34495e;
+            margin-top: 0;
+        }
+ 
+        form input, form select, form button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+ 
+        form button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+ 
+        form button:hover {
+            background-color: #2980b9;
+        }
+ 
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+ 
+        li {
+            background: #ecf0f1;
+            margin: 10px 0;
+            padding: 12px 16px;
+            border-radius: 8px;
+            transition: background 0.3s ease;
+        }
+ 
+        li:hover {
+            background: #dce4ea;
+        }
+ 
+        .section {
+            margin-bottom: 30px;
+        }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>📅 Planning App</h1>
+     
+            <div class="section">
+                <h2>➕ Add a Task</h2>
+                <form id="taskForm">
+                    <input type="text" id="name" placeholder="Task Name" required>
+                    <select id="type">
+                        <option value="recurring">Recurring</option>
+                        <option value="variable">Variable</option>
+                    </select>
+                    <input type="text" id="extra1" placeholder="Day (if recurring) or Due Date">
+                    <input type="text" id="extra2" placeholder="Time or Priority">
+                    <input type="text" id="extra3" placeholder="End time or Difficulty">
+                    <button type="submit">Add Task</button>
+                </form>
+            </div>
+     
+            <div class="section">
+                <h2>📋 All Tasks</h2>
+                <ul id="taskList"></ul>
+            </div>
+        </div>
+     
+        <script>
+            async function fetchTasks() {
+                const res = await fetch("/tasks"); //This makes an api call/request to the /task api endpoint 
+                const tasks = await res.json();
+                const list = document.getElementById("taskList");
+                list.innerHTML = "";
+                tasks.forEach((task, i) => {
+                    const li = document.createElement("li");
+                    li.textContent = `${i + 1}. ${task.name} (${task.type})`;
+                    list.appendChild(li);
+                });
+            }
+     
+            document.getElementById("taskForm").addEventListener("submit", async e => {
+                e.preventDefault();
+                const task = {
+                    name: document.getElementById("name").value,
+                    type: document.getElementById("type").value,
+                };
+     
+                if (task.type === "recurring") {
+                    task.day_of_week = document.getElementById("extra1").value;
+                    task.time = document.getElementById("extra2").value;
+                    task.end_time = document.getElementById("extra3").value;
+                } else {
+                    task.due_date = document.getElementById("extra1").value;
+                    task.priority = document.getElementById("extra2").value;
+                    task.difficulty = document.getElementById("extra3").value;
+                }
+     
+                await fetch("/tasks", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(task)
+                });
+     
+                e.target.reset();
+                fetchTasks();
+            });
+     
+            fetchTasks();
+        </script>
+    <body>
+</html>
