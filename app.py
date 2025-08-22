@@ -15,9 +15,12 @@ file_name = 'tasks.json'
 
 def load_task():
    if os.path.exists(file_name):
-    with open(file_name, "r" ) as file:
-        return json.load(file)
-    return[]
+        with open(file_name, "r" ) as file:
+            try:
+                return json.load(file)
+            except json.JSONDecodeError:
+                return[] 
+        return[]
     
 
 def save_task(task_list):

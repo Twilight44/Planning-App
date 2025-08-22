@@ -1,0 +1,9 @@
+[
+    {
+        "name": "soccer",
+        "type": "recurring",
+        "day_of_week": "Monday Tuesday",
+        "time": "6:15",
+        "end_time": "8:30"
+    }
+]
